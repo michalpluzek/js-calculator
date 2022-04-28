@@ -5,18 +5,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Calculator</title>
+    <link rel="stylesheet" href="../src/style.css" />
   </head>
   <body>
-    <noscript>Your browser does not support JavaScript!</noscript>
     <div class="calculator">
       <div class="calculator__main-part-container">
-        <div class="calculator__display" id="js-display"></div>
+        <div class="calculator__display" id="js-display">0</div>
         <div class="calculator__memory-container">
-          <div class="calculator__memory--button" id="js-MC">MC</div>
-          <div class="calculator__memory--button" id="js-MR">MR</div>
-          <div class="calculator__memory--button" id="js-M+">M+</div>
-          <div class="calculator__memory--button" id="js-M-">M-</div>
-          <div class="calculator__memory--button" id="js-MS">MS</div>
+          <div class="calculator__memory-button" id="js-MC">MC</div>
+          <div class="calculator__memory-button" id="js-MR">MR</div>
+          <div class="calculator__memory-button" id="js-M+">M+</div>
+          <div class="calculator__memory-button" id="js-M-">M-</div>
+          <div class="calculator__memory-button" id="js-MS">MS</div>
         </div>
         <div class="calculator__buttons-container">
           <div class="calculator__button" id="js-percent">%</div>
@@ -100,5 +100,7 @@
         <div class="calculator__history--list"></div>
       </div>
     </div>
+    <noscript>Your browser does not support JavaScript!</noscript>
+    <script src="../src/index.js"></script>
   </body>
 </html>
