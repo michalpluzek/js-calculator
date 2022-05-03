@@ -66,6 +66,10 @@ class Calculator {
     this.bindFunctionToButton(MEMORY_ADD_ID, () => this.memoryAdd());
     this.bindFunctionToButton(MEMORY_MINUS_ID, () => this.memoryMinus());
     this.bindFunctionToButton(MEMORY_SET_ID, () => this.memorySet());
+    this.bindFunctionToButton(CLEAR_ID, () => this.clear());
+    this.bindFunctionToButton(CANCEL_ID, () => this.cancel());
+    this.bindFunctionToButton(ADDITION_ID, () => this.addition());
+    this.bindFunctionToButton(SUBTRACTION_ID, () => this.subtraction());
 
     return;
   }
@@ -93,7 +97,7 @@ class Calculator {
       this.displayValue === '0' ||
       this.wasSpecialFunctionClicked
         ? textContentWithoutWhiteSigns
-        : this.displayValue + textContentWithoutWhiteSigns;
+        : Number(this.displayValue) + Number(textContentWithoutWhiteSigns);
 
     if (this.wasEqualClicked) {
       this.previousValue = 0;
@@ -103,7 +107,7 @@ class Calculator {
 
     this.wasSpecialFunctionClicked = false;
     this.isFunctionDone = false;
-    this.display.textContent = this.displayValue;
+    this.changeDisplayValue(this.displayValue);
   }
 
   memoryClear() {
@@ -113,8 +117,8 @@ class Calculator {
 
   memoryRead() {
     this.wasSpecialFunctionClicked = true;
-    this.displayValue = this.memoryValue;
-    this.display.textContent = this.memoryValue.toString();
+
+    this.changeDisplayValue(this.memoryValue);
   }
 
   memoryAdd() {
@@ -130,6 +134,103 @@ class Calculator {
   memorySet() {
     this.wasSpecialFunctionClicked = true;
     this.memoryValue = Number(this.displayValue);
+  }
+
+  clear() {
+    this.previousValue = 0;
+    this.selectedFunction = null;
+
+    this.changeDisplayValue(null);
+  }
+
+  cancel() {
+    this.changeDisplayValue(null);
+  }
+
+  addition(hasRepeatedValue) {
+    this.callPreviousFunctionAndAssignNew(hasRepeatedValue, this.addition);
+
+    if (this.isFunctionDone) {
+      this.setValueForIsFunctionDone();
+
+      return;
+    }
+
+    const [displayValue, previousValue] =
+      this.getDisplayAndPreviousValue(hasRepeatedValue);
+    const newValue = displayValue + previousValue;
+
+    this.getRepeatedValue(newValue, hasRepeatedValue);
+    this.setValuesAfterSettingNewValue(newValue);
+  }
+
+  subtraction(hasRepeatedValue) {
+    this.callPreviousFunctionAndAssignNew(hasRepeatedValue, this.subtraction);
+
+    if (this.isFunctionDone) {
+      this.setValueForIsFunctionDone();
+
+      return;
+    }
+
+    const [displayValue, previousValue] =
+      this.getDisplayAndPreviousValue(hasRepeatedValue);
+    let newValue;
+
+    if (this.previousValue !== null) {
+      newValue = hasRepeatedValue
+        ? displayValue - this.repeatedValue
+        : previousValue - displayValue;
+
+      this.getRepeatedValue(newValue, hasRepeatedValue);
+    }
+
+    this.setValuesAfterSettingNewValue(newValue);
+  }
+
+  callPreviousFunctionAndAssignNew(hasRepeatedValue, currentFunction) {
+    if (this.selectedFunction !== currentFunction && this.selectedFunction) {
+      this.selectedFunction(hasRepeatedValue);
+    }
+    this.selectedFunction = currentFunction;
+  }
+
+  setValueForIsFunctionDone() {
+    this.repeatedValue = Number(this.previousValue);
+    this.displayValue = 0;
+    this.wasEqualClicked = false;
+  }
+
+  getDisplayAndPreviousValue(hasRepeatedValue) {
+    const displayValue = Number(this.display.textContent);
+    const previousValue = hasRepeatedValue
+      ? this.repeatedValue
+      : Number(this.previousValue);
+
+    return [displayValue, previousValue];
+  }
+
+  getRepeatedValue(newValue, hasRepeatedValue) {
+    this.repeatedValue = hasRepeatedValue
+      ? this.repeatedValue
+      : this.wasEqualClicked
+      ? newValue
+      : Number(this.display.textContent);
+  }
+
+  setValuesAfterSettingNewValue(newValue) {
+    this.isFunctionDone = true;
+    this.wasEqualClicked = false;
+    this.displayValue = null;
+    this.display.textContent =
+      this.previousValue !== null ? newValue : this.display.textContent;
+    this.previousValue =
+      this.previousValue !== null ? newValue : this.display.textContent;
+  }
+
+  changeDisplayValue(value) {
+    this.displayValue = value;
+    this.display.textContent = value === null ? '0' : value.toString();
   }
 }
 
