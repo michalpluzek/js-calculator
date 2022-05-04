@@ -73,6 +73,9 @@ class Calculator {
     this.bindFunctionToButton(MULTIPLY_ID, () => this.multiplication());
     this.bindFunctionToButton(DIVIDE_ID, () => this.division());
     this.bindFunctionToButton(EQUAL_ID, () => this.equal());
+    this.bindFunctionToButton(BACK_ID, () => this.back());
+    this.bindFunctionToButton(INVERT_ID, () => this.inversion());
+    this.bindFunctionToButton(COMMA_ID, () => this.addComma());
 
     return;
   }
@@ -243,6 +246,26 @@ class Calculator {
     this.wasEqualClicked = true;
   }
 
+  back() {
+    this.changeDisplayValue(
+      this.displayValue ? this.displayValue.slice(0, -1) : null
+    );
+  }
+
+  inversion() {
+    this.changeDisplayValue(this.displayValue * -1);
+  }
+
+  addComma() {
+    const isComma = this.display.textContent.includes('.');
+
+    if (!isComma) {
+      this.changeDisplayValue(
+        `${this.displayValue ? this.displayValue : '0'}.`
+      );
+    }
+  }
+
   callPreviousFunctionAndAssignNew(hasRepeatedValue, currentFunction) {
     if (this.selectedFunction !== currentFunction && this.selectedFunction) {
       this.selectedFunction(hasRepeatedValue);
@@ -284,8 +307,10 @@ class Calculator {
   }
 
   changeDisplayValue(value) {
+    const isNoValue = value === null || value === '';
+
     this.displayValue = value;
-    this.display.textContent = value === null ? '0' : value.toString();
+    this.display.textContent = isNoValue ? '0' : value.toString();
   }
 }
 
