@@ -70,6 +70,9 @@ class Calculator {
     this.bindFunctionToButton(CANCEL_ID, () => this.cancel());
     this.bindFunctionToButton(ADDITION_ID, () => this.addition());
     this.bindFunctionToButton(SUBTRACTION_ID, () => this.subtraction());
+    this.bindFunctionToButton(MULTIPLY_ID, () => this.multiplication());
+    this.bindFunctionToButton(DIVIDE_ID, () => this.division());
+    this.bindFunctionToButton(EQUAL_ID, () => this.equal());
 
     return;
   }
@@ -97,7 +100,7 @@ class Calculator {
       this.displayValue === '0' ||
       this.wasSpecialFunctionClicked
         ? textContentWithoutWhiteSigns
-        : Number(this.displayValue) + Number(textContentWithoutWhiteSigns);
+        : this.displayValue + textContentWithoutWhiteSigns;
 
     if (this.wasEqualClicked) {
       this.previousValue = 0;
@@ -188,6 +191,58 @@ class Calculator {
     this.setValuesAfterSettingNewValue(newValue);
   }
 
+  multiplication(hasRepeatedValue) {
+    this.callPreviousFunctionAndAssignNew(
+      hasRepeatedValue,
+      this.multiplication
+    );
+
+    if (this.isFunctionDone) {
+      this.setValueForIsFunctionDone();
+
+      return;
+    }
+
+    const [displayValue, previousValue] =
+      this.getDisplayAndPreviousValue(hasRepeatedValue);
+    const newValue = displayValue * previousValue;
+
+    this.getRepeatedValue(newValue, hasRepeatedValue);
+    this.setValuesAfterSettingNewValue(newValue);
+  }
+
+  division(hasRepeatedValue) {
+    this.callPreviousFunctionAndAssignNew(hasRepeatedValue, this.division);
+
+    if (this.isFunctionDone) {
+      this.setValueForIsFunctionDone();
+
+      return;
+    }
+
+    const [displayValue, previousValue] =
+      this.getDisplayAndPreviousValue(hasRepeatedValue);
+    const newValue = hasRepeatedValue
+      ? displayValue / this.repeatedValue
+      : previousValue === 0
+      ? displayValue
+      : previousValue / displayValue;
+
+    this.getRepeatedValue(newValue, hasRepeatedValue);
+    this.setValuesAfterSettingNewValue(newValue);
+  }
+
+  equal() {
+    this.isFunctionDone = false;
+    if (!this.wasEqualClicked) {
+      this.selectedFunction(false);
+    } else {
+      this.selectedFunction(true);
+    }
+
+    this.wasEqualClicked = true;
+  }
+
   callPreviousFunctionAndAssignNew(hasRepeatedValue, currentFunction) {
     if (this.selectedFunction !== currentFunction && this.selectedFunction) {
       this.selectedFunction(hasRepeatedValue);
@@ -197,7 +252,7 @@ class Calculator {
 
   setValueForIsFunctionDone() {
     this.repeatedValue = Number(this.previousValue);
-    this.displayValue = 0;
+    this.displayValue = '0';
     this.wasEqualClicked = false;
   }
 
